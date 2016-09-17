@@ -27,7 +27,7 @@ for filename in /sys/class/net/**/statistics/*x_bytes; do
 
     if (( BYTECOUNT > 0 )); then
         if [ "$1" = "config" ]; then
-            echo $INTERFACE"_$OPERATION.label=$OPERATION"
+            echo $INTERFACE"_$OPERATION.label "$INTERFACE" ($OPERATION)"
             echo $INTERFACE"_$OPERATION.draw STACK"
             echo $INTERFACE"_$OPERATION.min 0"
         else
