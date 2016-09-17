@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ "$1" = "suggest" ]; then
+    echo "network"
+    exit 0
+fi
+
+if [ "$1" = "config" ]; then
+    cat <<'EOM'
+graph_title Cumulative bytes transfer (Since last boot)
+graph_args -l 0 --base 1024
+graph_vlabel Bytes
+graph_category network
+EOM
+fi
+
+for filename in /sys/class/net/**/statistics/*x_bytes; do
+    INTERFACE=$(echo "$filename" | cut -d'/' -f 5)
+    FILETYPE=$(echo "$filename" | cut -d'/' -f 7)
+    BYTECOUNT=$(cat "$filename")
+
+    if [ $FILETYPE = 'rx_bytes' ]; then
+        OPERATION='incoming'
+    else
+        OPERATION='outgoing'
+    fi
+
+    if (( BYTECOUNT > 0 )); then
+        if [ "$1" = "config" ]; then
+            echo $INTERFACE"_$OPERATION.label=$OPERATION"
+            echo $INTERFACE"_$OPERATION.draw STACK"
+            echo $INTERFACE"_$OPERATION.min 0"
+        else
+            echo $INTERFACE"_$OPERATION.value $BYTECOUNT"
+        fi
+    fi
+done
+
+exit 0
+
