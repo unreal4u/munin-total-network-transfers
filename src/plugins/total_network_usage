@@ -8,7 +8,7 @@ fi
 if [ "$1" = "config" ]; then
     cat <<'EOM'
 graph_title Cumulative bytes transfer (Since last boot)
-graph_args -l 0 --base 1024
+graph_args -l 0 --base 1000
 graph_vlabel Bytes
 graph_category network
 EOM
@@ -25,7 +25,7 @@ for filename in /sys/class/net/**/statistics/*x_bytes; do
         OPERATION='outgoing'
     fi
 
-    if (( BYTECOUNT > 0 )); then
+    if (( BYTECOUNT > 0 )) && [ $INTERFACE != 'lo' ]; then
         if [ "$1" = "config" ]; then
             echo $INTERFACE"_$OPERATION.label "$INTERFACE" ($OPERATION)"
             echo $INTERFACE"_$OPERATION.draw STACK"
